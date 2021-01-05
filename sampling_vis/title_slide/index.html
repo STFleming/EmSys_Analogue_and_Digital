@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.links line {
+  stroke: #999;
+  stroke-opacity: 0.6;
+}
+
+.nodes circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+text {
+  font-family: sans-serif;
+  font-size: 10px;
+}
+
+</style>
+<svg width="900" height="1000"></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+
+// graph.json
+var graph_json = "maze.json";
+
+var visited_colour = "#bfef45";
+var unvisited_colour = "gainsboro";
+var queued_colour = "#ffe119";
+var active_colour = "#f58231";
+
+
+var start_node_id = 0;
+
+// Use a force layout to plot the graph
+// force directed layout has been adapted from https://bl.ocks.org/heybignick/3faf257bbbbc7743bb72310d03b86ee8
+var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height");
+
+var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+var graph_data = [];
+
+var visited = [];
+var bfs_queue = [];
+var up_next = [];
+
+// NOTE: NONE OF THIS IS OPTIMISED. THE CODE WAS WRITTEN QUICKLY TO DEMONSTRATE THE BFS ALGORITHM AS I DID NOT HAVE MUCH FREE TIME TO WORK ON IT FOR THE INTERVIEW PRESENTATION :)
+
+// Adds a label to the diagram
+function addLabel(x, y, text_in) {
+	svg.append("text")
+	   .attr("x", x)
+	   .attr("y", y)
+           .style("font-family", "serif")
+           .style("font-size", 22)
+           .style("text-decoration", "underline")
+	   .text(text_in);
+}
+
+// Adds a label to the diagram
+function addTitle(x, y, text_in) {
+	svg.append("text")
+	   .attr("x", x)
+	   .attr("y", y)
+           .style("font-family", "serif")
+           .style("font-size", 32)
+           .style("text-decoration", "underline")
+	   .text(text_in);
+}
+
+// -=-=-=--=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//         Shortest path parent array 
+// -=-=-=--=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+var parent_array_x = 100;
+var parent_array_y = 950;
+
+var parray_item_w = 20;
+var parray_item_h = 20;
+var parray_item_spacing = 3;
+
+// The actual array
+var parent_array = [];
+
+function drawParentArray(){
+
+    var pa_cx = parent_array_x;
+    for(var n in graph_data.nodes){
+       svg.append("rect")
+          .attr("id", "parent_array_"+graph_data.nodes[n].id)
+          .attr("x", pa_cx)
+          .attr("y", parent_array_y)
+          .attr("height", parray_item_h)
+          .attr("width", parray_item_w)
+          .style("fill", "white")
+          .style("stroke-width", 0.5)
+          .style("stroke", "black")
+          .style("opacity", 1.0);
+
+       svg.append("text")
+          .attr("id", "parent_array_label_"+graph_data.nodes[n].id)
+          .attr("x", pa_cx + 3)
+          .attr("y", parent_array_y - 10)
+          .style("font-family", "serif")
+	      .style("opacity", 1.0)
+          .style("font-size", 14)
+          .text(graph_data.nodes[n].id);
+
+        pa_cx += parray_item_w + parray_item_spacing;
+        parent_array.push(0);
+    }
+}
+
+// Adds text to the parent array
+function addParentArray(node_id, parent_id){
+    //d3.select("#parent_array_"+node_id).style("fill", visited_colour).style("opacity", 0.3);  
+    //var x = parseInt(d3.select("#parent_array_"+node_id).attr("x"));
+    //var y = parseInt(d3.select("#parent_array_"+node_id).attr("y"));
+    //svg.append("text")
+    //   .attr("id", "parent_array_entry")
+    //   .attr("x", x + 3)
+    //   .attr("y", y + parray_item_h - parray_item_h/4)
+    //   .style("font-family", "serif")
+	//   .style("opacity", 1.0)
+    //   .style("font-size", 14)
+    //   .text(parent_id);
+
+    parent_array[node_id] = parent_id;
+}
+
+// Captures the shortest path
+var shortest_path = [];
+
+// shotests path step
+function shortestPathStep(src) {
+    d3.selectAll("#sp_arrow").remove(); 
+    if(src != start_node_id) {
+        // highlight the node
+        d3.select("#parent_array_"+src).style("fill", active_colour);
+
+        // lookup dest
+        var dest = parent_array[src];
+        //var dest_x = parent_array_x + (dest-1)*(parray_item_w + parray_item_spacing);
+        //var src_x = parent_array_x + (src-1)*(parray_item_w + parray_item_spacing);
+
+        //// Draw the arrows connecting them
+        //svg.append("line")
+        //   .attr("id", "sp_arrow")
+        //   .style("stroke", "gainsboro")
+        //   .style("stroke-width", 2)
+        //   .style("stroke-dasharray", ("3,3"))
+        //   .attr("x1", src_x + parray_item_w/2)
+        //   .attr("y1", parent_array_y + parray_item_h)
+        //   .attr("x2", src_x + parray_item_w/2)
+        //   .attr("y2", parent_array_y + parray_item_h + 10);
+
+        //svg.append("line")
+        //   .attr("id", "sp_arrow")
+        //   .style("stroke", "gainsboro")
+        //   .style("stroke-width", 2)
+        //   .style("stroke-dasharray", ("3,3"))
+        //   .attr("x1", src_x + parray_item_w/2)
+        //   .attr("y1", parent_array_y + parray_item_h + 10)
+        //   .attr("x2", dest_x + parray_item_w/2)
+        //   .attr("y2", parent_array_y + parray_item_h + 10);
+
+        //svg.append("line")
+        //   .attr("id", "sp_arrow")
+        //   .style("stroke", "gainsboro")
+        //   .style("stroke-width", 2)
+        //   .style("stroke-dasharray", ("3,3"))
+        //   .attr("x1", dest_x + parray_item_w/2)
+        //   .attr("y1", parent_array_y + parray_item_h)
+        //   .attr("x2", dest_x + parray_item_w/2)
+        //   .attr("y2", parent_array_y + parray_item_h + 10);
+        
+
+        return dest;
+    }
+    return start_node_id;
+}
+
+
+// -=-=-=--=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//         Queue Visualiser and helpers
+// -=-=-=--=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+var queue_x = 150;
+var queue_y = 825;
+var queue_item_w = 30;
+var queue_item_h = 70;
+var queue_item_spacing = 5;
+var vis_queue = [];
+var queue_x_end = 0;
+var q_bbox_margin = 15;
+
+
+// Bounding box for the queue
+var min_q_size = (queue_item_w)/2;
+
+var q_width = min_q_size; 
+function drawQBox(){
+    addLabel(queue_x - 100, queue_y + queue_item_h/2, "Queue: "); 
+
+    svg.append("rect")
+       .attr("id", "qBoundBox")
+       .attr("x", queue_x - q_bbox_margin/2)
+       .attr("y", queue_y - q_bbox_margin/2)
+       .attr("height", queue_item_h + q_bbox_margin)
+       .attr("width", q_width)
+       .style("fill", "none")
+       .style("stroke-dasharray", ("3","3"))
+       .style("stroke-width", 1)
+       .style("stroke", "grey");
+};
+
+function updateQBox(adj_amount){
+    var adjustment = 0;
+    if( (q_width + adj_amount) < min_q_size)
+        adjustment = min_q_size;
+    else 
+        adjustment = q_width + adj_amount;
+
+    d3.select("#qBoundBox").transition().attr("width", adjustment).duration(250);
+
+    q_width = adjustment;
+};
+
+// shuffle along all the items in the queue
+function visShuffleAlong() {
+
+	var x_pos = queue_x;
+	//for(var i in vis_queue) {
+	for (var i = vis_queue.length -1; i>=0; i--) {
+		d3.select("#qBox_"+vis_queue[i])
+		  .transition()
+		  .attr("x", function(d) {
+			  return x_pos + queue_item_w + queue_item_spacing;
+		  })
+		  .duration(250);
+
+		d3.select("#qText_"+vis_queue[i])
+		  .transition()
+		  .attr("x", function(d) { 
+			  return x_pos + queue_item_w + queue_item_spacing + queue_item_w/4;
+		  })
+		  .duration(250);
+
+		x_pos = x_pos + queue_item_w + queue_item_spacing;
+	}
+	queue_x_end = x_pos;
+}
+
+// clear all elements in the vis queue
+function visQClear(){
+	for(var i in vis_queue) {
+		d3.select("#qBox_"+vis_queue[i]).remove();
+		d3.select("#qText_"+vis_queue[i]).remove();
+	}
+	q_width = min_q_size;
+    updateQBox(0);
+}
+
+
+// performs the visualisation of an item being added to the queue
+function visAddItem(node_id){
+
+   visShuffleAlong();
+   updateQBox(queue_item_w + queue_item_spacing);
+
+   // New item appears after a delay to allow the shuffle to happen
+   var delay = (vis_queue.length == 0) ? 0 : 150;
+   setTimeout( function() {
+       svg.append("rect")
+          .attr("id", "qBox_"+node_id)
+          .attr("x", queue_x)
+          .attr("y", queue_y)
+          .attr("height", queue_item_h)
+          .attr("width", queue_item_w)
+          .style("fill", queued_colour)
+          .style("stroke-width", 1)
+          .style("stroke", "black")
+          .style("opacity", 1.0);
+
+       svg.append("text")
+          .attr("id", "qText_"+node_id)
+          .attr("x", queue_x + queue_item_w/4)
+          .attr("y", queue_y + queue_item_h/2 + 4)
+          .style("font-family", "serif")
+	  .style("opacity", 1.0)
+          .style("font-size", 18)
+          .text(node_id);
+
+
+   }, delay);
+
+   vis_queue.push(node_id);
+}
+
+// performs the visualisation of an item being removed from the queue
+function visRemoveItem() {
+	d3.select("#qBox_"+ vis_queue[0]).transition().style("opacity", 0.1).duration(250);
+	d3.select("#qText_"+vis_queue[0]).transition().style("opacity", 0.1).duration(250);
+	updateQBox(-1*(queue_item_w + queue_item_spacing));
+	setTimeout( function() {
+		d3.select("#qBox_"+ vis_queue[0]).remove();
+		d3.select("#qText_"+vis_queue[0]).remove();
+		vis_queue.shift();
+	}, 250);
+}
+
+// Enque dot (a dot that shows what is being enqued)
+function dotEnque(node_id) {
+    // animates a dot moving from node_id on the graph and pushing an item into the queue
+    var start_x = d3.select("#cell_"+node_id).attr("x");
+    var start_y = d3.select("#cell_"+node_id).attr("y");
+
+    var Tlen = 800;
+
+     svg.append("circle")
+     .attr("id", "enque_dot")
+     .attr("cx", start_x)
+     .attr("cy", start_y)
+     .attr("r", 5)
+     .style("stroke", "none")
+     .style("fill", queued_colour)
+     .transition()
+     .attr("cx", queue_x + queue_item_w/2)
+     .attr("cy", queue_y + queue_item_h/2)
+     .duration(Tlen);
+
+     setTimeout( function() {
+        visAddItem(node_id);
+        setTimeout( function() { d3.select("#enque_dot").remove(); }, 150);
+     }, Tlen - 250);
+
+}
+
+// Deque dot (a dot that shows what is being dequed)
+function dotDeque(node_id) {
+    // animates a dot moving from node_id on the graph and pushing an item into the queue
+    var end_x = d3.select("#cell_"+node_id).attr("x");
+    var end_y = d3.select("#cell_"+node_id).attr("y");
+    var Tlen = 800;
+
+     svg.append("circle")
+     .attr("id", "deque_dot")
+     .attr("cx", queue_x + q_width)
+     .attr("cy", queue_y + queue_item_h/2)
+     .attr("r", 5)
+     .style("stroke", "none")
+     .style("fill", active_colour)
+     .transition()
+     .attr("cx", end_x)
+     .attr("cy", end_y)
+     .duration(Tlen);
+
+     setTimeout( function() {
+	    nodeColour(node_id, active_colour); 
+	    nodeHighlight(node_id);
+        setTimeout( function() { d3.select("#deque_dot").remove(); }, 250);
+     }, Tlen);
+
+}
+
+
+function Queue() {
+	this.elements = [];
+};
+
+// enque
+Queue.prototype.enque = function (e) {
+	this.elements.push(e);
+	//visAddItem(e);
+	//dotEnque(e);
+};
+
+// peek
+Queue.prototype.peek = function () {
+	return !this.isEmpty() ? this.elements[0] : undefined;
+}
+
+// deque
+Queue.prototype.deque = function() {
+	visRemoveItem();
+	return this.elements.shift();
+};
+
+// isEmpty
+Queue.prototype.isEmpty = function() {
+	return this.elements.length == 0;
+};
+
+// length
+Queue.prototype.length = function() {
+	return this.elements.length;
+}
+
+let node_queue = new Queue();
+
+// -=-=-=--=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+// returns true if a node has already been visited
+// doing a linear walk over a visited list every node consideration is ridiculous but I'm in a hurry
+function hasVisited(node_id) {
+	return visited[node_id];
+}
+
+// when provided with a node returns all the nodes connected to it
+function neighbours(node_id) {
+	n = []; // the list of neighbours of node_id
+	for(var l in graph_data.links) {
+		if(graph_data.links[l].source == node_id) {
+			n.push(graph_data.links[l].target);
+		}
+		if(graph_data.links[l].target == node_id) {
+			n.push(graph_data.links[l].source);
+		}
+	}
+	return n;
+}
+
+var current_node = 0;
+var fin = false;
+
+// reset the BFS
+function resetBFS() {
+	visited = [];
+	for(var node in graph_data.nodes) {
+		d3.select("#node_" + graph_data.nodes[node].id).style("fill", unvisited_colour).style("opacity", "1.0");  
+		visited[graph_data.nodes[node].id] = false;
+	}
+	up_next = [];
+	current_node = undefined;
+
+	while(!node_queue.isEmpty()){
+		node_queue.deque();
+	}
+
+	visQClear();
+	fin = false;
+    d3.selectAll("#node_highlight").remove(); 	
+    reenableEdges();
+}
+
+// highlights all unvisited neighbours
+function highlightNextUp(node_id) {
+	var possible = neighbours(node_id);
+	for(var i in possible) {
+		if(!hasVisited(possible[i])) {
+			d3.select("#node_"+possible[i]).style("fill", queued_colour); 	
+			up_next.push(possible[i]);
+		}
+	}
+}
+
+// disables all controls
+function disableControls() {
+    d3.selectAll("#cntrl_step").style("fill", "gainsboro");
+    d3.selectAll("#cntrl_reset").style("fill", "gainsboro");
+    d3.selectAll("#cntrl_play").style("fill", "gainsboro");
+};
+
+// enables all controls
+function enableControls() {
+    d3.selectAll("#cntrl_step").style("opacity", "white");
+    d3.selectAll("#cntrl_reset").style("opacity", "white");
+    d3.selectAll("#cntrl_play").style("opacity", "white");
+};
+
+
+// play the simulation at a certain speed
+// disable all other controls while this is happening
+var shortest_path_fin = false;
+var playing = false;
+var playback_speed = 4;
+function playback(){
+    setTimeout(function () {
+
+        if(!playing)
+            disableControls();
+
+        stepBFS();
+        if(!shortest_path_fin) {
+            playing = true;
+            playback();
+        } else {
+            playing = false;
+            enableControls();
+        }
+    }, playback_speed);
+}
+
+// change the colour of a given node 
+function nodeColour(node_id, colour) {
+    d3.select("#node_"+node_id).style("fill", colour); 	
+}
+
+// For all links connected to a node dim it's edges
+function dimEdges(node_id) {
+    var opacity = 0.3;
+    for(var li in graph_data.links) {
+        if(graph_data.links[li].source.id == node_id) {
+            d3.select("#link_"+graph_data.links[li].source.id+"_"+graph_data.links[li].target.id).style("opacity", opacity);
+        }
+        if(graph_data.links[li].target.id == node_id) {
+            d3.select("#link_"+graph_data.links[li].source.id+"_"+graph_data.links[li].target.id).style("opacity", opacity);
+        }
+    }
+}
+
+// reenable edges
+function reenableEdges(){
+    for(var li in graph_data.links) {
+        d3.select("#link_"+graph_data.links[li].source.id+"_"+graph_data.links[li].target.id).style("opacity", "1.0");
+    }
+}
+
+// changes the colour, and opacity
+function nodeVisitedVis(node_id) {
+    d3.select("#cell_"+node_id).style("opacity", "0.7").style("fill",visited_colour);
+    dimEdges(node_id);
+}
+
+// highlight the current node
+function nodeHighlight(node_id) {
+
+};
+
+// clear the highlight
+function nodeHighlightClear(){
+    d3.selectAll("#node_highlight").remove(); 	
+};
+
+// Shortest path variables
+var shortest_path_curr_id = 1599;
+
+// Adds a small dot for the shortest path
+function addSPDot(prev_node_id, node_id) {
+    var csp_x = parseInt(d3.select("#cell_"+node_id).attr("x"));
+    var csp_y = parseInt(d3.select("#cell_"+node_id).attr("y"));
+
+    var psp_x =  parseInt(d3.select("#cell_"+prev_node_id).attr("x"));
+    var psp_y =  parseInt(d3.select("#cell_"+prev_node_id).attr("y"));
+    
+    svg.append("circle")
+       .attr("id", "shortest_path_dot")
+       .attr("cx", csp_x + cell_size/2)
+       .attr("cy", csp_y + cell_size/2)
+       .attr("r", 1.5)   
+       .style("fill", "red");
+
+    svg.append("line")
+       .attr("id", "shortest_path_dot")
+       .attr("x1", csp_x + cell_size/2)
+       .attr("y1", csp_y + cell_size/2)
+       .attr("x2", psp_x + cell_size/2)
+       .attr("y2", psp_y + cell_size/2)
+       .style("stroke", "red")
+       .style("stroke-width", 3);
+}
+
+var shortest_path_prev_id = shortest_path_curr_id;
+// step the BFS forward one position
+function stepBFS() {
+	if(up_next.length == 0) {
+	    if(node_queue.isEmpty()) {
+	        nodeVisitedVis(current_node);
+	        nodeHighlightClear();
+		fin = true;
+            if(shortest_path_curr_id != start_node_id) {
+                addSPDot(shortest_path_prev_id,shortest_path_curr_id);
+                shortest_path.push(shortest_path_curr_id);
+                shortest_path_prev_id = shortest_path_curr_id;
+		        shortest_path_curr_id = shortestPathStep(shortest_path_curr_id);
+            } else {
+		        shortest_path_fin = true;
+		        addSPDot(shortest_path_prev_id, shortest_path_curr_id);
+            }
+	    } else {
+	        nodeVisitedVis(current_node);
+	        current_node = node_queue.deque();	
+            	//dotDeque(current_node);
+
+	        up_next = neighbours(current_node);
+	    } 
+	} else {
+	    var nnode = up_next.shift();
+       	    nodeHighlight(nnode);
+	    if(!hasVisited(nnode)) {
+                nodeColour(nnode, queued_colour);
+	    	node_queue.enque(nnode);
+	        visited[nnode] = true;
+               addParentArray(nnode, current_node);
+	    }
+	}
+
+}
+
+// initialise the BFS
+function initBFS() {
+	current_node = start_node_id;
+	d3.select("#node_"+start_node_id).style("fill", visited_colour);
+    	if(start_node_id != undefined) {
+	    //node_queue.enque(start_node_id);
+	    nodeVisitedVis(current_node);
+	    current_node = start_node_id;
+            nodeColour(current_node, active_colour);
+            nodeHighlight(current_node);
+
+            up_next = neighbours(current_node);
+            visited[current_node] = true;
+    }
+}
+
+// Adds a button that when triggered executes func()
+function addButton(id, x, y, text_in, func) {
+   var button_width = 80;
+   var button_height = 30;
+
+  var button_text = svg.append("text")
+      .attr("x", x + button_width/4 - text_in.length + 5)
+      .attr("y", y + button_height/2 + 4)
+      .style("font-family", "serif")
+      .style("font-size", 18)
+      .text(text_in);
+
+   var button = svg.append("rect")
+      .attr("id", id)
+      .attr("x", x)
+      .attr("y", y)
+      .attr("height", button_height)
+      .attr("width", button_width)
+      .style("fill", "white")
+      .style("stroke-width", 2)
+      .style("stroke", "black")
+      .style("opacity", 0.3)
+        .on("mouseover", function() { if(!playing) { d3.select(this).style("fill", queued_colour); d3.select(this).style("opacity", 0.3);} })
+      .on("mouseout",  function() { d3.select(this).style("fill", "white"); })
+      .on("click", function() { if(!playing) func();});
+
+}
+
+var maze_x = 100;
+var maze_y = 100;
+
+var maze_n = 40;
+
+var cell_size = 12;
+var cell_space = 2; 
+var wall_stroke = 2;
+
+function getIdent(x,y, n){
+    return (x*n) + y;
+}
+
+d3.json(graph_json, function(error, graph) {
+  if (error) throw error;
+  
+   graph_data = graph;
+
+   // Generate the grid
+   for(var y=0; y<maze_n; y++) {
+        for(var x=0; x<maze_n; x++) {
+       		svg.append("rect")
+	           .attr("id", "cell_"+getIdent(x,y,maze_n))
+	           .attr("x", x*(cell_size + cell_space) + maze_x)
+	           .attr("y", y*(cell_size + cell_space) + maze_y)
+	           .attr("height", cell_size + cell_space)
+	           .attr("width", cell_size + cell_space)
+	           .style("fill", "white")
+	           .style("stroke-width", 0);
+
+		svg.append("line")
+		   .attr("id", "wall_"+getIdent(x,y,maze_n)+"_"+getIdent(x+1,y,maze_n))
+	           .attr("x1", (x+1)*(cell_size + cell_space) + maze_x)
+		   .attr("y1", y*(cell_size + cell_space) + maze_y)
+	           .attr("x2", (x+1)*(cell_size + cell_space) + maze_x)
+                   .attr("y2", (y+1)*(cell_size + cell_space) + maze_y) 
+	           .style('stroke-width', wall_stroke)
+	           .style("stroke", "black");
+
+		svg.append("line")
+		   .attr("id", "wall_"+getIdent(x,y,maze_n)+"_"+getIdent(x,y+1,maze_n))
+	           .attr("x1", x*(cell_size + cell_space) + maze_x)
+		   .attr("y1", (y+1)*(cell_size + cell_space) + maze_y)
+	           .attr("x2", (x+1)*(cell_size + cell_space) + maze_x)
+                   .attr("y2", (y+1)*(cell_size + cell_space) + maze_y) 
+	           .style('stroke-width', wall_stroke)
+	           .style("stroke", "black");
+		 
+       }
+   }
+
+   // draw top and side
+    svg.append("line")
+       .attr("id", "wall_top")
+       .attr("x1", maze_x)
+       .attr("y1", maze_y)
+       .attr("x2", maze_n*(cell_size + cell_space) + maze_x)
+       .attr("y2", maze_y) 
+       .style('stroke-width', wall_stroke)
+       .style("stroke", "black");
+
+    svg.append("line")
+       .attr("id", "wall_left")
+       .attr("x1", maze_x)
+       .attr("y1", maze_y + cell_size)
+       .attr("x2", maze_x)
+       .attr("y2", maze_n*(cell_size + cell_space) + maze_y) 
+       .style('stroke-width', wall_stroke)
+       .style("stroke", "black");
+
+
+   // CARVE OUT THE MAZE
+   // For all the connections delete the link
+   for(l in graph_data.links) {
+       var cell1 = graph_data.links[l].source;
+       var cell2 = graph_data.links[l].target;
+       d3.select("#wall_"+Math.min(cell1, cell2)+"_"+Math.max(cell1,cell2)).remove();
+   }
+
+   // carve out the exit
+   d3.select("#wall_"+getIdent(maze_n-1,maze_n-1,maze_n)+"_"+getIdent(maze_n,maze_n-1,maze_n)).remove();
+
+   initBFS();
+
+   addTitle(250, 85, "Breadth First Search");
+
+   // control buttons
+   var cntrl_x = 175;
+   var cntrl_y = 700;
+   addLabel(cntrl_x,cntrl_y,"Controls");
+   addButton("cntrl_play", cntrl_x + 100, cntrl_y - 20, "play()", playback); 
+   //addButton("cntrl_reset", cntrl_x + 200, cntrl_y - 20, "reset()", resetBFS); 
+   //addButton("cntrl_step", cntrl_x + 100, cntrl_y -20, "step()", stepBFS); 
+
+    // The Queue
+    //drawQBox();
+
+    // parent array
+    //drawParentArray();
+});
+
+
+</script>
+
