@@ -1,0 +1,31 @@
+Input source: 
+        Max voltage: 2v
+        DC Offset: 0
+        Freq: 10Hz
+        Phase: 0
+
+Voltage Follower 1: 
+        Max Output: 15
+        Min Output: -15
+        Gain: 100k
+
+MOSFET: 
+        Threshold Voltage: 3
+        Beta: 20m
+        Swap D/S 
+
+Control Source:
+        Max Voltage: 10
+        DC offset: 0
+        Freq: 100
+        Phase Offset: 0
+        Duty Cycle: 2
+
+Cap:
+        Value: 250nF
+
+Voltage Follower 2: 
+        Max Output: 15
+        Min Output: -15
+        Gain: 100k
+
