@@ -76,9 +76,22 @@ class wave {
         }
         // -----------------------------------
 
+        // updates the function
+        updateFunc(foo) {
+                this.func = foo;
+        }
+
         // clears the display 
         clear() {
                 d3.selectAll("#"+this.name+"_lines").remove();
+        }
+
+        reset() {
+                this.clear();
+                for(var i=0; i<this.size; i++) {
+                        this.data[i] = 0.0;
+                }
+                this.offset = 0;
         }
 
         // draws the function 

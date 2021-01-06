@@ -20,6 +20,7 @@ text {
 </style>
 <svg width="900" height="1000"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://unpkg.com/d3-simple-slider"></script>
 <script src="colourScheme.js"></script>
 <script src="wave.js"></script>
 <script>
@@ -30,6 +31,12 @@ var svg = d3.select("svg"),
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
+function starting_sinusoid(time) {
+        return 1.5*Math.sin(Math.PI * time *2.5);
+}
+
+var in_wave = new wave(svg, colour, 150, 150, 100, 300, starting_sinusoid, "in_sine_wave");  
+
 svg.append("rect")
    .attr("x", 0)
    .attr("y", 0)
@@ -37,11 +44,33 @@ svg.append("rect")
    .attr("height", 1000)
    .attr("fill", colour.env);
 
-function sinusoid(time) {
-        return 1.5*Math.sin(Math.PI * time *2.5);
-}
+var in_period = 1.0;
+var in_amplitude = 1.0;
 
-var in_wave = new wave(svg, colour, 150, 150, 100, 300, sinusoid, "in_sine_wave");  
+var slider_x = 50;
+var slider_y = 20;
+var period_slider = d3
+                 .sliderHorizontal()
+                 .width(500)
+                 .min(0)
+                 .max(5)
+                 .displayValue(false)
+                 .tickFormat(d3.format(".2f"))
+                 .displayFormat(d3.format(".2f"))
+                 .ticks(5)
+                 .step(0.1)
+                 .on('onchange', (val) => {
+                         in_period = val;
+                         in_wave.reset();
+                         in_wave.updateFunc( function (time) { return in_amplitude*Math.sin(Math.PI * time * in_period);}); });
+
+svg.append('svg')
+   .attr('width', width)
+   .attr('height', height)
+   .append('g')
+   .attr('transform', 'translate('+ slider_x +','+slider_y+')')
+   .call(period_slider);
+
 
 var sim_tick = setInterval(step, 40);
 
