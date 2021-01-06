@@ -4,7 +4,7 @@
 
 class wave { 
 
-        constructor(svg, colour, x, y, height, width, func, name) {
+        constructor(svg, colour, x, y, height, width, func, name, adaptive=true, maxVal=20, minVal=-20) {
 
                 // hard coded parameter
                 this.timestep = 0.04;
@@ -18,9 +18,13 @@ class wave {
                 this.height = height;
                 this.width = width;
                 this.name = name;
+                this.adaptive = adaptive;
+                this.maxVal = maxVal;
+                this.minVal = minVal;
 
                 // func -- a function that accepts t (time) and returns a value
-                this.func = func;
+                this.func = [];
+                this.func.push(func);
                 this.time = 0.0;
 
                 // linear scale for the x-axis
@@ -42,11 +46,20 @@ class wave {
                 this.offset %= this.data.length;
         }
 
+        // computes the step (apply all queued funcs)
+        compute(time){
+                var tval = 0.0;
+                for(var i=0; i<this.func.length; i++) {
+                       tval += this.func[i](time); 
+                }
+                return tval;
+        }
+
         // step() -- computes the next element, shifts everything along by one, then redraws
         step() {
                 // increase time
                 this.time += this.timestep;
-                this.push(this.func(this.time));        
+                this.push(this.compute(this.time));        
 
                 // draw
                 this.draw();
@@ -76,9 +89,22 @@ class wave {
         }
         // -----------------------------------
 
+        // Appends a function
+        appendFunc(foo) {
+                this.func.push(foo);
+        }
+
         // updates the function
         updateFunc(foo) {
-                this.func = foo;
+                this.clearFunc();
+                this.func.push(foo);
+        }
+
+        // clears the waveform function
+        clearFunc() {
+               for(var i=0; i<this.func.length; i++) {
+                       this.func.pop();
+               }
         }
 
         // clears the display 
@@ -96,13 +122,18 @@ class wave {
 
         // draws the function 
         draw() {
+                console.log("Redrawing...");
               this.clear();
 
-              // adaptive height
-              var cmax = this.max();
-              var cmin = this.min();
-              
-              var lin_scale = d3.scaleLinear().domain([cmin, cmax + 2]).range([0, this.height]); 
+              var cmin=this.minVal;
+              var cmax=this.maxVal;
+              if(this.adaptive) {
+                  console.log("Adaptive!");
+                  // adaptive height
+                  cmax = this.max();
+                  cmin = this.min();
+              } 
+              var lin_scale = d3.scaleLinear().domain([cmin, cmax]).range([0, this.height]); 
 
               for(var i=0; i<this.size-1; i++) {
                  var idx = (i + this.offset) % this.data.length;

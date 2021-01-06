@@ -35,7 +35,7 @@ function starting_sinusoid(time) {
         return 1.5*Math.sin(Math.PI * time *2.5);
 }
 
-var in_wave = new wave(svg, colour, 150, 150, 100, 300, starting_sinusoid, "in_sine_wave");  
+var in_wave = new wave(svg, colour, 150, 150, 100, 300, starting_sinusoid, "in_sine_wave", false, 12, -12);  
 
 svg.append("rect")
    .attr("x", 0)
@@ -47,13 +47,14 @@ svg.append("rect")
 var in_period = 1.0;
 var in_amplitude = 1.0;
 
-var slider_x = 50;
-var slider_y = 20;
+// Period slider
+var period_slider_x = 50;
+var period_slider_y = 40;
 var period_slider = d3
                  .sliderHorizontal()
                  .width(500)
                  .min(0)
-                 .max(5)
+                 .max(7)
                  .displayValue(false)
                  .tickFormat(d3.format(".2f"))
                  .displayFormat(d3.format(".2f"))
@@ -61,16 +62,41 @@ var period_slider = d3
                  .step(0.1)
                  .on('onchange', (val) => {
                          in_period = val;
-                         in_wave.reset();
+                         //in_wave.reset();
                          in_wave.updateFunc( function (time) { return in_amplitude*Math.sin(Math.PI * time * in_period);}); });
 
 svg.append('svg')
    .attr('width', width)
    .attr('height', height)
    .append('g')
-   .attr('transform', 'translate('+ slider_x +','+slider_y+')')
+   .attr('transform', 'translate('+ period_slider_x +','+period_slider_y+')')
    .call(period_slider);
 
+
+// amplitude slider
+var amplitude_slider_x = 650;
+var amplitude_slider_y = 50;
+var amplitude_slider = d3
+                 .sliderVertical()
+                 .height(50)
+                 .min(0)
+                 .max(20)
+                 .displayValue(false)
+                 .tickFormat(d3.format(".2f"))
+                 .displayFormat(d3.format(".2f"))
+                 .ticks(3)
+                 .step(0.1)
+                 .on('onchange', (val) => {
+                         in_amplitude = val;
+                         //in_wave.reset();
+                         in_wave.updateFunc( function (time) { return in_amplitude*Math.sin(Math.PI * time * in_period);}); });
+
+svg.append('svg')
+   .attr('width', width)
+   .attr('height', height)
+   .append('g')
+   .attr('transform', 'translate('+ amplitude_slider_x +','+ amplitude_slider_y+')')
+   .call(amplitude_slider);
 
 var sim_tick = setInterval(step, 40);
 
