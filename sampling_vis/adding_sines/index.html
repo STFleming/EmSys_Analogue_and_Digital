@@ -18,7 +18,7 @@ text {
 }
 
 </style>
-<svg width="900" height="1000"></svg>
+<svg width="1500" height="2000"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://unpkg.com/d3-simple-slider"></script>
 <script src="colourScheme.js"></script>
@@ -35,13 +35,13 @@ function starting_sinusoid(time) {
         return 1.5*Math.sin(Math.PI * time *2.5);
 }
 
-var in_wave = new wave(svg, colour, 150, 150, 100, 300, starting_sinusoid, "in_sine_wave", false, 12, -12);  
+var in_wave = new wave(svg, colour, 150, 150, 100, 300, starting_sinusoid, "in_sine_wave", false, 8, -8);  
 
 svg.append("rect")
    .attr("x", 0)
    .attr("y", 0)
-   .attr("width", 900)
-   .attr("height", 1000)
+   .attr("width", 1500)
+   .attr("height", 2000)
    .attr("fill", colour.env);
 
 var in_period = 1.0;
@@ -54,16 +54,20 @@ var period_slider = d3
                  .sliderHorizontal()
                  .width(500)
                  .min(0)
-                 .max(7)
+                 .max(14)
                  .displayValue(false)
                  .tickFormat(d3.format(".2f"))
                  .displayFormat(d3.format(".2f"))
-                 .ticks(5)
+                 .ticks(15)
                  .step(0.1)
                  .on('onchange', (val) => {
                          in_period = val;
-                         //in_wave.reset();
-                         in_wave.updateFunc( function (time) { return in_amplitude*Math.sin(Math.PI * time * in_period);}); });
+                         var camplitude = in_amplitude;
+                         in_wave.reset();
+                         in_wave.updateFunc( function (time) { 
+                                 return camplitude*Math.sin(Math.PI * time * val);
+                         }); 
+                   });
 
 svg.append('svg')
    .attr('width', width)
@@ -78,18 +82,22 @@ var amplitude_slider_x = 650;
 var amplitude_slider_y = 50;
 var amplitude_slider = d3
                  .sliderVertical()
-                 .height(50)
+                 .height(150)
                  .min(0)
-                 .max(20)
+                 .max(6)
                  .displayValue(false)
                  .tickFormat(d3.format(".2f"))
                  .displayFormat(d3.format(".2f"))
-                 .ticks(3)
+                 .ticks(4)
                  .step(0.1)
                  .on('onchange', (val) => {
                          in_amplitude = val;
-                         //in_wave.reset();
-                         in_wave.updateFunc( function (time) { return in_amplitude*Math.sin(Math.PI * time * in_period);}); });
+                         var cperiod = in_period;
+                         in_wave.reset();
+                         in_wave.updateFunc( function (time) { 
+                                return val*Math.sin(Math.PI * time * cperiod);
+                         }); 
+                 });
 
 svg.append('svg')
    .attr('width', width)
@@ -98,10 +106,61 @@ svg.append('svg')
    .attr('transform', 'translate('+ amplitude_slider_x +','+ amplitude_slider_y+')')
    .call(amplitude_slider);
 
+
+// ----------------------------------------
+//       The waveform viewer
+// ----------------------------------------
+
+function nullwave(time) {
+        return 0.0;
+}
+
+var main_wave = new wave(svg, colour, 150, 450, 250, 300, nullwave, "main_wave");  
+
+// button for adding
+this.svg.append("text")
+        .attr("id", "addButton")
+        .style("font-family", "sans-serif")
+        .style("font-size", "36px")
+        .attr("fill", colour.base)
+        .attr("x", 675)
+        .attr("y", 100)
+        .on("mouseover", function() { 
+                d3.select("#addButton").attr("fill", colour.highlight);
+        })
+        .on("mouseout", function() {
+                d3.select("#addButton").attr("fill", colour.base); 
+        })
+        .on("click", function() {
+               main_wave.appendFunc(in_wave.getFunc()); 
+        })
+        .text("+");
+
+this.svg.append("text")
+        .attr("id", "resetButton")
+        .style("font-family", "sans-serif")
+        .style("font-size", "36px")
+        .attr("fill", colour.base)
+        .attr("x", 675)
+        .attr("y", 150)
+        .on("mouseover", function() { 
+                d3.select("#resetButton").attr("fill", colour.highlight);
+        })
+        .on("mouseout", function() {
+                d3.select("#resetButton").attr("fill", colour.base); 
+        })
+        .on("click", function() {
+               main_wave.reset(); 
+        })
+        .text("reset");
+
+// ----------------------------------------
+
 var sim_tick = setInterval(step, 40);
 
 function step() {
         in_wave.step();
+        main_wave.step();
 }
 
 
