@@ -48,8 +48,8 @@ var in_period = 1.0;
 var in_amplitude = 1.0;
 
 // Period slider
-var period_slider_x = 50;
-var period_slider_y = 40;
+var period_slider_x = 120;
+var period_slider_y = 60;
 var period_slider = d3
                  .sliderHorizontal()
                  .width(500)
@@ -67,6 +67,7 @@ var period_slider = d3
                          in_wave.updateFunc( function (time) { 
                                  return camplitude*Math.sin(Math.PI * time * val);
                          }); 
+                        updateWaveEq(in_amplitude, in_period);
                    });
 
 svg.append('svg')
@@ -76,10 +77,20 @@ svg.append('svg')
    .attr('transform', 'translate('+ period_slider_x +','+period_slider_y+')')
    .call(period_slider);
 
+this.svg.append("text")
+        .attr("id", "amp_text")
+        .style("font-family", "sans-serif")
+        .style("font-size", "18px")
+        .attr("fill", colour.base)
+        .attr("x", period_slider_x + 220)
+        .attr("y", period_slider_y - 20)
+        .text("period control");
+
+
 
 // amplitude slider
-var amplitude_slider_x = 650;
-var amplitude_slider_y = 50;
+var amplitude_slider_x = 75;
+var amplitude_slider_y = 75;
 var amplitude_slider = d3
                  .sliderVertical()
                  .height(150)
@@ -97,6 +108,7 @@ var amplitude_slider = d3
                          in_wave.updateFunc( function (time) { 
                                 return val*Math.sin(Math.PI * time * cperiod);
                          }); 
+                        updateWaveEq(in_amplitude, in_period);
                  });
 
 svg.append('svg')
@@ -105,6 +117,24 @@ svg.append('svg')
    .append('g')
    .attr('transform', 'translate('+ amplitude_slider_x +','+ amplitude_slider_y+')')
    .call(amplitude_slider);
+
+this.svg.append("text")
+        .attr("id", "amp_text")
+        .style("font-family", "sans-serif")
+        .style("font-size", "18px")
+        .attr("fill", colour.base)
+        .attr("x", amplitude_slider_x - 40)
+        .attr("y", amplitude_slider_y  + 200)
+        .text("amplitude");
+
+this.svg.append("text")
+        .attr("id", "amp_text")
+        .style("font-family", "sans-serif")
+        .style("font-size", "18px")
+        .attr("fill", colour.base)
+        .attr("x", amplitude_slider_x - 32)
+        .attr("y", amplitude_slider_y  + 220)
+        .text("control");
 
 
 // ----------------------------------------
@@ -118,13 +148,69 @@ function nullwave(time) {
 var main_wave = new wave(svg, colour, 150, 450, 250, 300, nullwave, "main_wave");  
 
 // button for adding
+this.svg.append("circle")
+        .attr("cx", 561)
+        .attr("cy", 204)
+        .attr("r", 25)
+        .attr("stroke", colour.base)
+        .attr("stroke-width", 2);
+
+this.svg.append("line")
+        .attr("x1", 480)
+        .attr("y1", 204)
+        .attr("x2", 529)
+        .attr("y2", 204)
+        .attr("stroke", colour.base)
+        .attr("stroke-width", 1);
+
+this.svg.append("line")
+        .attr("x1", 593)
+        .attr("y1", 204)
+        .attr("x2", 660)
+        .attr("y2", 204)
+        .attr("stroke", colour.base)
+        .attr("stroke-width", 1);
+
+this.svg.append("line")
+        .attr("x1", 660)
+        .attr("y1", 204)
+        .attr("x2", 660)
+        .attr("y2", 304)
+        .attr("stroke", colour.base)
+        .attr("stroke-width", 1);
+
+this.svg.append("line")
+        .attr("x1", 660)
+        .attr("y1", 304)
+        .attr("x2", 650)
+        .attr("y2", 294)
+        .attr("stroke", colour.base)
+        .attr("stroke-width", 1);
+
+this.svg.append("line")
+        .attr("x1", 660)
+        .attr("y1", 304)
+        .attr("x2", 670)
+        .attr("y2", 294)
+        .attr("stroke", colour.base)
+        .attr("stroke-width", 1);
+
+this.svg.append("line")
+        .attr("x1", 0)
+        .attr("y1", 320)
+        .attr("x2", 4000)
+        .attr("y2", 320)
+        .attr("stroke", colour.base)
+        .style("stroke-dasharray", ("3,3"))
+        .attr("stroke-width", 1);
+
 this.svg.append("text")
         .attr("id", "addButton")
         .style("font-family", "sans-serif")
         .style("font-size", "36px")
         .attr("fill", colour.base)
-        .attr("x", 675)
-        .attr("y", 100)
+        .attr("x", 550)
+        .attr("y", 215)
         .on("mouseover", function() { 
                 d3.select("#addButton").attr("fill", colour.highlight);
         })
@@ -136,13 +222,20 @@ this.svg.append("text")
         })
         .text("+");
 
+this.svg.append("rect")
+        .attr("x", 690)
+        .attr("y", 342)
+        .attr("width", 100)
+        .attr("height", 50)
+        .attr("stroke", colour.base);
+
 this.svg.append("text")
         .attr("id", "resetButton")
         .style("font-family", "sans-serif")
         .style("font-size", "36px")
         .attr("fill", colour.base)
-        .attr("x", 675)
-        .attr("y", 150)
+        .attr("x", 700)
+        .attr("y", 375)
         .on("mouseover", function() { 
                 d3.select("#resetButton").attr("fill", colour.highlight);
         })
@@ -153,6 +246,22 @@ this.svg.append("text")
                main_wave.reset(); 
         })
         .text("reset");
+
+
+function updateWaveEq(amp, period){
+        d3.selectAll("#wave_eq").text(amp.toFixed(2) + "*sin(pi*t*" + period.toFixed(2)+")");
+}
+
+
+this.svg.append("text")
+        .attr("id", "wave_eq")
+        .style("font-family", "sans-serif")
+        .style("font-size", "18px")
+        .attr("fill", colour.base)
+        .attr("x", 500)
+        .attr("y", 150)
+        .text("1.5*sin(pi*t*2.5)");
+
 
 // ----------------------------------------
 
