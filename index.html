@@ -61,16 +61,7 @@
 
                  <section data-transition="none" data-background-image="imgs/24.png"  data-background-size="contain"></section>
 
-                 <section data-transition="none" data-markdown>
-                        <textarea data-template>
-                                __Digital Logic and Finite Precision__                    
-                        </textarea>
-                 </section>
-                 <section data-transition="none" data-markdown>
-                        <textarea data-template>
-                                __Why Digital Logic requires a clock__                    
-                        </textarea>
-                 </section>
+                 <section data-transition="none" data-background-image="imgs/25.png"  data-background-size="contain"></section>
 
                  <section data-transition="none" data-markdown>
                         <textarea data-template>
@@ -124,88 +115,59 @@
 				 <section data-background-iframe="https://tinyurl.com/yy5apkw7" data-background-interactive></section>
                  <section data-transition="none" data-background-image="imgs/aliasing.png"  data-background-size="contain"></section>
 
+                 <!-- Quantiser : Overview  --!>
+                 <section data-transition="none" data-background-image="imgs/3.png"  data-background-size="contain"></section>
+                 <section data-transition="none" data-background-image="imgs/1.png"  data-background-size="contain"></section>
+                 <section data-transition="none" data-background-image="imgs/2.png"  data-background-size="contain"></section>
 
-                 <section data-transition="none" data-background-image="imgs/16.png"  data-background-size="contain"></section>
-                 <section data-transition="none" data-background-image="imgs/17.png"  data-background-size="contain"></section>
+                 <!-- Quantiser : Code  --!>
                  <section data-transition="none" data-background-image="imgs/18.png"  data-background-size="contain"></section>
+                 <section data-transition="none" data-background-image="imgs/quantiser_full_code.png"  data-background-size="contain"></section>
+                 <section data-transition="none" data-background-image="imgs/18.png"  data-background-size="contain"></section>
+
+                 <!-- Quantiser : Comparator  --!>
+                 <section data-transition="none" data-background-image="imgs/16.png"  data-background-size="contain"></section>
+				 <section data-background-iframe="https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCAMB0l3BWcMBsBmALAJhQdgWgJwAcYKCFICkVVkAUAIYhYIosY1rEYc3HgkAWjBIw8eCDQhe4ifTC4sLNiyy8skAVnVQQuKbRrHowkADUA9gBsALowDmAUwVKV7Vh63u9B3kmMoUxAAUiwAIQsbe2d6AHkpHj4ZNGV1GggGIA" data-background-interactive></section>
+                 <section data-transition="none" data-background-image="imgs/17.png"  data-background-size="contain"></section>
+
+                 <!-- Quantiser : Potential Divider --!>
                  <section data-transition="none" data-background-image="imgs/19.png"  data-background-size="contain"></section>
-                 <section data-transition="none" data-background-image="imgs/21.png"  data-background-size="contain"></section>
-                 <section data-transition="none" data-background-image="imgs/25.png"  data-background-size="contain"></section>
+				 <section data-background-iframe="https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCAMB0l3BWcMBMcUHYMGZIA4UA2ATmIxEO2QpQCgA3cMFEbQvJlgFg8ihC58wfEVGgJaAd04COKQbKi0ATiHl8eahWl7J4KrXx2HW7fsP3SwzU3IVtetAPInjuLmvzgl09Yq7Y3I6+9mYBLA5KquH+geAouhZwBjHMHDHGQvCQKXHGGXiJ2bksCelxkVn6LqkJAsSE8RwQOTV5XlwNns1KbaWF9Y1l3jlAA" data-background-interactive></section>
+
+                 <section data-transition="none" data-background-image="imgs/18.png"  data-background-size="contain"></section>
+
+                 <!-- Quantiser : Coder --!>
+                 <section data-transition="none" data-background-image="imgs/coder_mappings.png"  data-background-size="contain"></section>
+				 <section data-background-iframe="https://tinyurl.com/yytaorsd" data-background-interactive></section>
 
 
+                 <!-- ADC : Conclusion --!>
+                 <section data-transition="none" data-background-image="imgs/3.png"  data-background-size="contain"></section>
+
+                 <!-- Anti-Aliasing --!>
                  <section data-transition="none" data-markdown>
                         <textarea data-template>
-                                __sampler -> quantiser -> coder__                    
+                                __Problem... what if we get high frequency signals at the input?__                    
                         </textarea>
                  </section>
-
-                 <section data-transition="none" data-markdown>
-                        <textarea data-template>
-                                __high level idea -- reference voltage__                    
-                        </textarea>
-                 </section>
-
-                 <section data-transition="none" data-markdown>
-                        <textarea data-template>
-                                __OpAmp as a comparator__                    
-                        </textarea>
-                 </section>
-
-				<section data-background-iframe="https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCAMB0l3BWcMBsBmALAJhQdgWgJwAcYKCFICkVVkAUAIYhYIosY1rEYc3HgkAWjBIw8eCDQhe4ifTC4sLNiyy8skAVnVQQuKbRrHowkADUA9gBsALowDmAUwVKV7Vh63u9B3kmMoUxAAUiwAIQsbe2d6AHkpHj4ZNGV1GggGIA" data-background-interactive></section>
-
-                 <section data-transition="none" data-markdown>
-                        <textarea data-template>
-                                __potential divider circuit__                    
-                        </textarea>
-                 </section>
-
-				<section data-background-iframe="https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCAMB0l3BWcMBMcUHYMGZIA4UA2ATmIxEO2QpQCgA3cMFEbQvJlgFg8ihC58wfEVGgJaAd04COKQbKi0ATiHl8eahWl7J4KrXx2HW7fsP3SwzU3IVtetAPInjuLmvzgl09Yq7Y3I6+9mYBLA5KquH+geAouhZwBjHMHDHGQvCQKXHGGXiJ2bksCelxkVn6LqkJAsSE8RwQOTV5XlwNns1KbaWF9Y1l3jlAA" data-background-interactive></section>
-
-                 <section data-transition="none" data-markdown>
-                        <textarea data-template>
-                                __7-bit reference voltage divider__                    
-                        </textarea>
-                 </section>
-
-                 <section data-transition="none" data-markdown>
-                        <textarea data-template>
-                                __The FLASH ADC (Hand drawn)__                    
-                        </textarea>
-                 </section>
+                 <section data-transition="none" data-background-image="imgs/aliasing.png"  data-background-size="contain"></section>
+                 <section data-transition="none" data-background-image="imgs/will_this_be_okay.png"  data-background-size="contain"></section>
+				 <section data-transition="none" data-background-iframe="https://app.sli.do/event/ne0kdvxr/embed/polls/e0b907dc-aa24-4f62-b401-62f1beec52ce" data-background-interactive></section>
+				 <section data-transition="none" data-background-iframe="sampling_vis/adding_sines/index.html" data-background-interactive></section>
+				 <section data-transition="none" data-background-iframe="https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCAMB0l3BWK0EHYEBYBskBMXUdI0BmEBSc8yAKACUQSFdHIMRcAOT19ylsPCqURKGgHsoIPuTC4ySGPAj8pJGkA" data-background-interactive></section>
 
 
-                 <section data-transition="none" data-markdown>
-                        <textarea data-template>
-                                __What is the priority encoder doing__                    
-                        </textarea>
-                 </section>
-
-				<section data-background-iframe="https://tinyurl.com/yytaorsd" data-background-interactive></section>
+				 <section data-transition="none" data-background-iframe="https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCAMB0l3BWEA2aAWB8CcBmSy0AOBBAdkJE0ssgCgB5ENOcZSSsAJlfd9oHMmLToQrN2OTryi0ATiE7MeQ9mDZRwhUrQDGK5eIWiNMeJAidoOMJDJqshTli5SKp87TCl2i1etfKOAqq8NQwYLQA9kwgkhrMDmGw2KTICMicSD4xOFEacewJFFnJcFip6Zng4LQAFrEKsbRAA" data-background-interactive></section>
+				 <section data-transition="none" data-background-iframe="https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCAMB0l3BWEA2aAWB8CcBmSy0AOBBAdkJE0ssgCgB5ENOcZSSsAJlfd9oHMmLToQrN2OTryi0ATiE7MeQ9mDZQadAMYrl4haI0x4kHFnMXLV5FFhgsYNGjBgypZIXcjbcMLQBKCkpqqljcIRrcSkjSMAi0APZMIJIaCI6kIJnGvpHJOIkaqezpnNwxsNjuCMicSBB+ABYpCim0QA" data-background-interactive></section>
 
 
-                 <section data-transition="none" data-markdown>
-                        <textarea data-template>
-                                __Problem... what if we get high frequency signals in out input__                    
-                        </textarea>
-                 </section>
+                 <section data-transition="none" data-background-image="imgs/conclusion.png"  data-background-size="contain"></section>
 
-                 <section data-transition="none" data-markdown>
-                        <textarea data-template>
-                                __Anti-aliasing filter high-level concept__                    
-                        </textarea>
-                 </section>
-
-                 <section data-transition="none" data-markdown>
-                        <textarea data-template>
-                                __Make any other wave from SineWaves__                    
-                        </textarea>
-                 </section>
-
-				<section data-background-iframe="sampling_vis/adding_sines/index.html" data-background-interactive></section>
-				<section data-background-iframe="https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCAMB0l3BWEA2aAWB8CcBmSy0AOBBAdkJE0ssgCgB5ENOcZSSsAJlfd9oHMmLToQrN2OTryi0ATiE7MeQ9mDZRwhUrQDGK5eIWiNMeJAidoOMJDJqshTli5SKp87TCl2i1etfKOAqq8NQwYLQA9kwgkhrMDmGw2KTICMicSD4xOFEacewJFFnJcFip6Zng4LQAFrEKsbRAA" data-background-interactive></section>
-				<section data-background-iframe="https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCAMB0l3BWEA2aAWB8CcBmSy0AOBBAdkJE0ssgCgB5ENOcZSSsAJlfd9oHMmLToQrN2OTryi0ATiE7MeQ9mDZQadAMYrl4haI0x4kHFnMXLV5FFhgsYNGjBgypZIXcjbcMLQBKCkpqqljcIRrcSkjSMAi0APZMIJIaCI6kIJnGvpHJOIkaqezpnNwxsNjuCMicSBB+ABYpCim0QA" data-background-interactive></section>
-				<section data-background-iframe="https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCAMB0l3BWcMBMcUHYMGZIA4UA2ATmIxEIBYQkFIAoMQycZ8S6pllSl7lsPCHxGbHgI4hxU3lCkDhw0S2xp21Vd1n9kikQHN1MidRR48choZQ9jU22Yt96h3Kdlup5y-QDu4DEJwYhRg0LAQqD8AoOkwQKkEIIZ-eNikxPTk6JQM3Ky7FMzi7GwCotKCysLoiPDIupBNKP98sKkMetCizC6O0OaKsvbsBD6KsZHJwfoAGRG1RtHu8BAAMwBDABsAZwBTGij53qa1E+W5CE3dg6QGeYvmx8m+de39w4YAJ1YTX5A8K9BEJ6D84pJpIDLkofs0wJJmlCFCCflwAVoWEiaCi7FDEa86CJYWoobxMUClIYyeiQNSwGAVkVKExiszYrYimMLDZqFz+lEAPI0Mz8hCRE4QMDRaptNnFb60lk84XcjnY4EuRWxbxywZRDZa0Uik7clgAWkWiigsHgzHpNi4zIIEWw1GRRP+UK9BJx3pp8LduhEaKhAZp0h0wL0RWIQUa9vaRQT8YZp2chiodkzjh88wTcNTF1e1w+d3oACUaXjQliWLIWa8YAhorG7K22jGCml5fQgA" data-background-interactive></section>
-				<section data-background-iframe="https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCAMB0l3BWEAWaAOMaBMA2AnNnmJAdiAjueZAFBg5JbKThZohYWvvJQ0BKIAMyReeSiN5oWMlCySyYCAcNEc07ScKGUWQjiyzCoUaMoDywnOzB4jyeuDsnaAdw7NwOQ5Bve+AE4Gfj7s4iYibsEg4VrhUVi+HFxMhly0AMbRnJSJmmoysPCQ+mDQOPR4FADsaMg4yNjIRjBwYDQA5tFaecKJLjTuvVhM2emD2aOpHKO0Qb30oTO8enATcRLWMbrrW7Fbi3xdQjrqmqdaMjQA9hx9Jg6QRgpFJXiQOJwmRkb6GQAuABsbsYhC0UMRnqZinhqgxPgpwCBrgBXf4ABzRNCAA" data-background-interactive></section>
+                 <!-- Digital To Analogue --!>
+                 <!--
+				 <section data-transition="none" data-background-iframe="https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCAMB0l3BWcMBMcUHYMGZIA4UA2ATmIxEIBYQkFIAoMQycZ8S6pllSl7lsPCHxGbHgI4hxU3lCkDhw0S2xp21Vd1n9kikQHN1MidRR48choZQ9jU22Yt96h3Kdlup5y-QDu4DEJwYhRg0LAQqD8AoOkwQKkEIIZ-eNikxPTk6JQM3Ky7FMzi7GwCotKCysLoiPDIupBNKP98sKkMetCizC6O0OaKsvbsBD6KsZHJwfoAGRG1RtHu8BAAMwBDABsAZwBTGij53qa1E+W5CE3dg6QGeYvmx8m+de39w4YAJ1YTX5A8K9BEJ6D84pJpIDLkofs0wJJmlCFCCflwAVoWEiaCi7FDEa86CJYWoobxMUClIYyeiQNSwGAVkVKExiszYrYimMLDZqFz+lEAPI0Mz8hCRE4QMDRaptNnFb60lk84XcjnY4EuRWxbxywZRDZa0Uik7clgAWkWiigsHgzHpNi4zIIEWw1GRRP+UK9BJx3pp8LduhEaKhAZp0h0wL0RWIQUa9vaRQT8YZp2chiodkzjh88wTcNTF1e1w+d3oACUaXjQliWLIWa8YAhorG7K22jGCml5fQgA" data-background-interactive></section>
+				 <section data-transition="none" data-background-iframe="https://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCAMB0l3BWEAWaAOMaBMA2AnNnmJAdiAjueZAFBg5JbKThZohYWvvJQ0BKIAMyReeSiN5oWMlCySyYCAcNEc07ScKGUWQjiyzCoUaMoDywnOzB4jyeuDsnaAdw7NwOQ5Bve+AE4Gfj7s4iYibsEg4VrhUVi+HFxMhly0AMbRnJSJmmoysPCQ+mDQOPR4FADsaMg4yNjIRjBwYDQA5tFaecKJLjTuvVhM2emD2aOpHKO0Qb30oTO8enATcRLWMbrrW7Fbi3xdQjrqmqdaMjQA9hx9Jg6QRgpFJXiQOJwmRkb6GQAuABsbsYhC0UMRnqZinhqgxPgpwCBrgBXf4ABzRNCAA" data-background-interactive></section>
+                 --!>
 				</section>
 
 			</div>
